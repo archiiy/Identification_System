@@ -1,4 +1,4 @@
-# VeriFAST — AI-Based KYC Verification System
+# AI-Based KYC Verification System
 
 AI-powered identity verification platform built using OCR, face matching, liveness detection, and centralized logging.
 
