@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+
+app/uploads/
+app/cropped_faces/
+
+.insightface/
+
+*.pyc
+*.pyo
+*.log

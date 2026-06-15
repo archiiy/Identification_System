@@ -1,0 +1,78 @@
+<div class="page-wrapper">
+    <div class="card">
+        <div class="stepper">Step 1 of 3</div>
+        <h1 class="card-title">Upload Document</h1>
+        <p class="card-subtitle">Please upload a clear image of your Aadhaar card.</p>
+
+        <div class="upload-area">
+            <input type="file" #fileInput id="aadhaar-file" class="hidden-input" accept="image/*"
+                (change)="pick($event)">
+
+            <label for="aadhaar-file" class="upload-label" [class.file-selected]="fileInput.files?.length">
+                <div class="upload-icon-wrapper">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" class="upload-icon">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                </div>
+
+                <span class="upload-title">
+                    {{ fileInput.files?.[0]?.name || 'Click to browse' }}
+                </span>
+
+                <span class="upload-desc">
+                    {{ fileInput.files?.[0] ? 'File ready to verify' : 'JPG, PNG up to 5MB' }}
+                </span>
+            </label>
+        </div>
+
+        <button type="button" class="btn-primary btn-full mt-6" (click)="verify()">
+            Verify Document
+        </button>
+
+        @if(result?.aadhaar?.valid) {
+        <div class="status-box success-box mt-6">
+            <div class="status-header">
+                <div class="status-indicator">✓</div>
+                <h2>Verification Successful</h2>
+            </div>
+
+            <div class="profile-grid">
+                <div class="grid-item">
+                    <span class="label">Name</span>
+                    <span class="value">{{result.profile?.name}}</span>
+                </div>
+                <div class="grid-item">
+                    <span class="label">DOB</span>
+                    <span class="value">{{result.profile?.dob}}</span>
+                </div>
+                <div class="grid-item">
+                    <span class="label">Gender</span>
+                    <span class="value">{{result.profile?.gender}}</span>
+                </div>
+                <div class="grid-item">
+                    <span class="label">Aadhaar</span>
+                    <span class="value">{{result.profile?.aadhaar}}</span>
+                </div>
+            </div>
+
+            <button type="button" (click)="goToSelfie()" class="btn-success btn-full mt-6">
+                Continue to Selfie →
+            </button>
+        </div>
+        }
+
+        @else if(result) {
+        <div class="status-box error-box mt-6">
+            <div class="status-header">
+                <div class="status-indicator error-indicator">!</div>
+                <h2>Invalid Document</h2>
+            </div>
+            <p class="error-msg">We couldn't verify the document. Please ensure the image is well-lit, unblurred, and
+                try again.</p>
+        </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,27 @@
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-modern {
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-sm);
+  background: #FAFAFA;
+  color: var(--text-main);
+  font-family: inherit;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.input-modern:focus {
+  background: #FFFFFF;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--secondary);
+}
+
+.input-modern::placeholder {
+  color: #A0A0A9;
+}

@@ -1,0 +1,154 @@
+.stepper {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+/* Upload Area */
+.upload-area {
+  position: relative;
+  width: 100%;
+}
+
+.hidden-input {
+  position: absolute;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background-color: #FAFAFA;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-label:hover {
+  background-color: var(--secondary);
+  border-color: var(--primary);
+  border-style: solid;
+}
+
+.upload-icon-wrapper {
+  background: white;
+  padding: 12px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 16px;
+  color: var(--primary);
+}
+
+.upload-title {
+  font-weight: 500;
+  font-size: 16px;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.upload-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* Status Boxes */
+.status-box {
+  padding: 24px;
+  border-radius: var(--radius-md);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.success-box { background-color: var(--success-bg); }
+.error-box { background-color: var(--error-bg); }
+
+.status-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.status-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--success);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.error-indicator { background-color: var(--error); }
+
+.error-msg {
+  color: #A04A4A;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Profile Grid */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  background: white;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  border: var(--border-thin);
+}
+
+.grid-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.grid-item .label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.grid-item .value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+/* Gives visual feedback when a file is actually selected */
+.upload-label.file-selected {
+  background-color: var(--secondary);
+  border-color: var(--primary);
+  border-style: solid;
+}
+
+.upload-label.file-selected .upload-title {
+  color: var(--primary);
+  font-weight: 600;
+}

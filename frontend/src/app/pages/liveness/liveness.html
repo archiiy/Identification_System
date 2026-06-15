@@ -1,0 +1,51 @@
+<div class="page-wrapper">
+  <div class="card">
+    <div class="stepper">Step 3 of 3</div>
+    <h1 class="card-title">Liveness Verification</h1>
+    <p class="card-subtitle">We need to confirm you are present. Look directly into the camera frame.</p>
+
+    <div class="camera-container" [hidden]="cameraError">
+      <video #video class="camera-feed" autoplay playsinline></video>
+      <div class="camera-overlay-frame"></div>
+    </div>
+
+    <div class="status-box error-box mt-6" *ngIf="cameraError">
+      <div class="status-header">
+        <div class="status-indicator error-indicator">!</div>
+        <h2>Camera Access Required</h2>
+      </div>
+      <p class="error-msg">⚠️ Camera access is required for liveness verification. Please check settings and refresh.</p>
+    </div>
+
+    <button class="btn-primary btn-full mt-6" (click)="capture()" [disabled]="loading || cameraError || verified">
+      Verify Liveness
+    </button>
+
+    <div class="status-section mt-6" *ngIf="loading || verified || failed">
+
+      <div class="loading-state" *ngIf="loading">
+        <div class="loader-minimal"></div>
+        <p class="loading-text">Processing... Move slightly or blink your eyes</p>
+      </div>
+
+      <div class="status-box success-box" *ngIf="verified">
+        <div class="status-header">
+          <div class="status-indicator">✓</div>
+          <h2>Real Person Verified</h2>
+        </div>
+        <button class="btn-success btn-full mt-4" (click)="continue()">
+          Continue →
+        </button>
+      </div>
+
+      <div class="status-box error-box" *ngIf="failed && !cameraError">
+        <div class="status-header">
+          <div class="status-indicator error-indicator">✕</div>
+          <h2>Liveness Verification Failed</h2>
+        </div>
+        <p class="error-msg">Spoofing or static image detected. Please ensure you are not using a photo printout and try again.</p>
+      </div>
+
+    </div>
+  </div>
+</div>

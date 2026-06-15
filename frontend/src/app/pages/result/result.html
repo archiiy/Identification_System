@@ -1,0 +1,73 @@
+<div class="dashboard-container">
+  <aside class="sidebar">
+    <div class="logo">VeriFAST</div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        Profile Overview
+      </a>
+    </nav>
+    <button class="logout-btn" (click)="logout()">
+      Logout
+    </button>
+  </aside>
+
+  <main class="main-content">
+    <header class="dashboard-header">
+      <div class="success-banner">
+        <div class="badge-icon">✓</div>
+        <div class="banner-text">
+          <h1>Identification Successful</h1>
+          <p>Your biometric parameters and official documents have been fully cross-referenced and authenticated.</p>
+        </div>
+      </div>
+    </header>
+
+    <section class="dashboard-grid">
+      
+      <div class="profile-card">
+        <div class="card-header">
+          <h3>Verified Credentials</h3>
+        </div>
+        
+        <div class="card-body" *ngIf="userProfile">
+          <div class="info-group">
+            <label>Full Name</label>
+            <p class="info-value">{{ userProfile.name }}</p>
+          </div>
+          <div class="info-group">
+            <label>Date of Birth</label>
+            <p class="info-value">{{ userProfile.dob }}</p>
+          </div>
+          <div class="info-group">
+            <label>Gender</label>
+            <p class="info-value">{{ userProfile.gender }}</p>
+          </div>
+          <div class="info-group">
+            <label>Identity Number</label>
+            <p class="info-value secure-mask">{{ userProfile.aadhaar }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="status-sidebar-cards">
+        <div class="status-mini-card">
+          <span class="status-indicator success-pulse"></span>
+          <div class="status-card-content">
+            <h4>Liveness Status</h4>
+            <p>Passed (Real Person)</p>
+          </div>
+        </div>
+        
+        <div class="status-mini-card">
+          <span class="status-indicator success-pulse"></span>
+          <div class="status-card-content">
+            <h4>Match Confidence</h4>
+            <p>High Security Match</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+</div>

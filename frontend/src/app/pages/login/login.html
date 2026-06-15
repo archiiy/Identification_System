@@ -1,0 +1,19 @@
+<div class="page-wrapper">
+  <div class="card">
+    <h1 class="card-title">Welcome</h1>
+    <p class="card-subtitle">Enter your email to continue</p>
+    
+    <div class="input-group">
+      <input 
+        type="email" 
+        class="input-modern"
+        [(ngModel)]="email" 
+        placeholder="name@example.com"
+      >
+    </div>
+    
+    <button class="btn-primary btn-full mt-6" (click)="continue()">
+      Continue
+    </button>
+  </div>
+</div>
