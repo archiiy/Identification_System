@@ -1,7 +1,11 @@
 import time
 import uuid
 
-from app.logger.elastic_logger import (logger,push_log)
+from app.logger.elastic_logger import (
+    logger,
+    push_log
+)
+
 
 async def logging_middleware(
     request,
@@ -13,11 +17,21 @@ async def logging_middleware(
     )
 
     try:
-        body = await request.body()
-        body = body.decode()
+        content_type = request.headers.get(
+            "content-type",
+            ""
+        )
+
+        if "multipart/form-data" in content_type:
+            body = "file_upload"
+
+        else:
+            body = (
+                await request.body()
+            ).decode()
 
     except:
-        body = "cannot_read"
+        body = "unknown"
 
     start = time.time()
 
@@ -33,7 +47,7 @@ method={request.method}
 
 body={body}
 """
-)
+    )
 
     try:
 
@@ -44,8 +58,10 @@ body={body}
     except Exception as e:
 
         duration = (
-            time.time()-start
-        )*1000
+            time.time()
+            -
+            start
+        ) * 1000
 
         logger.exception(
 f"""
@@ -65,6 +81,9 @@ duration={duration:.0f}ms
 
         push_log({
 
+            "event":
+            "api_request",
+
             "trace":
             trace_id,
 
@@ -74,19 +93,36 @@ duration={duration:.0f}ms
             "method":
             request.method,
 
+            "request":
+            (
+                "file_upload"
+                if body
+                and
+                body != "cannot_read"
+                else "empty"
+            ),
+
+            "response":
+            500,
+
+            "verification":
+            "failed",
+
             "error":
             str(e),
 
             "duration(ms)":
-            duration
+            round(duration)
 
         })
 
         raise
 
     duration = (
-        time.time()-start
-    )*1000
+        time.time()
+        -
+        start
+    ) * 1000
 
     logger.info(
 f"""
@@ -98,29 +134,49 @@ status={response.status_code}
 
 duration={duration:.0f}ms
 """
-)
+    )
 
     push_log({
 
-    "trace":
-    trace_id,
+        "event":
+        "api_request",
 
-    "endpoint":
-    request.url.path,
+        "trace":
+        trace_id,
 
-    "method":
-    request.method,
+        "endpoint":
+        request.url.path,
 
-    "status":
-    response.status_code,
+        "method":
+        request.method,
 
-    "duration(ms)":
-    duration,
+        "request":
+        (
+            "file_upload"
+            if body
+            and
+            body != "cannot_read"
+            else "empty"
+        ),
 
-    "body":
-    body
+        "response":
+        response.status_code,
 
-})
+        "result":
+        (
+            "passed"
+            if response.status_code < 400
+            else "failed"
+        ),
+
+        "error":
+        None,
+
+        "duration(ms)":
+        round(duration)
+
+    })
+
     response.headers[
         "X-Trace-ID"
     ] = trace_id

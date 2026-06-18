@@ -13,6 +13,7 @@ import { Api } from '../../services/api';
 export class Aadhaar {
   selected!: File;
   result: any = null;
+  isLoading = false;
 
   constructor(
     private api: Api,
@@ -32,15 +33,21 @@ export class Aadhaar {
       return;
     }
 
+    this.isLoading = true;
+    this.result = null;
+    this.cdr.detectChanges();
+
     this.api.verifyAadhaar(this.selected).subscribe({
       next: (res: any) => {
         console.log('RESPONSE', res);
         this.result = res;
-        this.cdr.detectChanges(); 
+        this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error(err);
         alert('Backend error');
+        this.isLoading = false;
         this.cdr.detectChanges();
       }
     });
@@ -48,8 +55,7 @@ export class Aadhaar {
 
   goToSelfie() {
     if (this.result?.profile) {
-        sessionStorage.setItem('user_profile', JSON.stringify(this.result.profile)); 
-      // Pass the profile data forward into the router state history cache
+      sessionStorage.setItem('user_profile', JSON.stringify(this.result.profile));
       this.router.navigate(['/selfie'], { state: { profile: this.result.profile } });
     }
   }
