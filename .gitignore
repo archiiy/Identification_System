@@ -44,3 +44,10 @@ docker-data/
 # ── OS ───────────────────────────────
 .DS_Store
 Thumbs.db
+
+# ── Ollama ───────────────────────────
+.ollama/
+ollama-data/
+
+# ── Angular cache ────────────────────
+.angular/cache/
