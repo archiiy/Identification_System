@@ -1,32 +1,55 @@
 import logging
-from elasticsearch import Elasticsearch
-from datetime import datetime
-es = Elasticsearch(
-    "http://localhost:9200"
+
+from elasticsearch import (
+    Elasticsearch
+)
+
+from datetime import (
+    datetime
 )
 
 
-logger=logging.getLogger("verification")
+ENABLE_ELASTIC = False
+
+
+es = None
+
+if ENABLE_ELASTIC:
+
+    try:
+
+        es = Elasticsearch(
+            "http://localhost:9200"
+        )
+
+    except:
+
+        es = None
+
+
+logger = logging.getLogger(
+    "verification"
+)
 
 logger.setLevel(
     logging.INFO
 )
 
-file=logging.FileHandler(
+file = logging.FileHandler(
     "verification.log"
 )
 
-formatter=logging.Formatter(
+formatter = logging.Formatter(
 "%(asctime)s %(levelname)s %(message)s"
 )
 
 file.setFormatter(
-formatter
+    formatter
 )
 
 logger.addHandler(
-file
-)
+    file)
+
 
 def push_log(
     data
@@ -39,18 +62,28 @@ def push_log(
         ] = datetime.utcnow(
         ).isoformat()
 
-        es.index(
-
-            index=
-            "verification-logs",
-
-            document=
-            data
-
+        logger.info(
+            str(data)
         )
+
+        if (
+            ENABLE_ELASTIC
+            and
+            es
+        ):
+
+            es.index(
+
+                index=
+                "verification-logs",
+
+                document=
+                data
+
+            )
 
     except Exception as e:
 
         logger.error(
-f"Elastic Error: {e}"
+f"Log Error: {e}"
 )

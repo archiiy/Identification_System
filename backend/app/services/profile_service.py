@@ -1,5 +1,4 @@
 import re
-import ollama
 
 from app.logger.elastic_logger import (
     push_log
@@ -10,67 +9,49 @@ def extract_name(text):
 
     try:
 
-        # strip everything after Issue Date to reduce noise
         cleaned = re.sub(
-            r"Issue\s*Date.*",
-            "",
-            text,
-            flags=re.I
-        )
+            r"\s+",
+            " ",
+            text
+        ).strip()
 
-        # strip everything before Government of India
+        # remove everything before Government of India
         cleaned = re.sub(
-            r".*?Government\s+of\s+India\s*",
+            r".*?Government\s*of\s*India",
             "",
             cleaned,
             flags=re.I
         )
 
-        response = ollama.chat(
+        # stop reading once DOB / Gender starts
+        cleaned = re.split(
 
-            model="qwen2.5",
+            r"(Issue\s*Date|DOB|D[O0]B|DB|Date\s*of\s*Birth|Male|Female)",
 
-            messages=[
-                {
-                    "role": "user",
-                    "content":
-f"""Extract the full name of the Aadhaar card holder.
-- Return ONLY the person's name, nothing else
-- Ignore: Government of India, OCR noise like HRHR RCR SITTT and any random letters or numbers, and any text related
-- Ignore: dates, numbers, DOB, gender words
-- No explanation, no labels, just the name
+            cleaned,
 
-OCR: {cleaned}"""
-                }
-            ],
-
-            options={
-                "temperature": 0
-            }
-
-        )
-
-        name = (
-            response["message"]["content"]
-            .strip()
-        )
-
-        # remove LLM preamble like "The name is..." or "Name: ..."
-        name = re.sub(
-            r"(?:name\s*[:\-]?\s*|the\s+\w+\s+name\s+is\s+)",
-            "",
-            name,
             flags=re.I
+
+        )[0]
+
+        # remove numbers
+        cleaned = re.sub(
+            r"\d+",
+            " ",
+            cleaned
         )
 
-        # keep only letters and spaces
-        name = re.sub(
+        # keep only letters
+        cleaned = re.sub(
             r"[^A-Za-z ]",
-            "",
-            name
-        ).strip()
+            " ",
+            cleaned
+        )
+
+        words = cleaned.split()
 
         blocked = [
+
             "government",
             "india",
             "male",
@@ -78,23 +59,62 @@ OCR: {cleaned}"""
             "dob",
             "aadhaar",
             "issue",
-            "issued"
+            "issued",
+            "date",
+            "vid"
+
         ]
 
         words = [
-            x for x in name.split()
-            if x.lower() not in blocked
-            and re.match(r"^[A-Za-z]+$", x)
+
+            x
+
+            for x in words
+
+            if (
+
+                x.lower()
+                not in blocked
+
+            )
+
         ]
 
+        # remove OCR prefixes
+        while (
+
+            words
+
+            and
+
+            (
+                len(words[0]) <= 3
+                or
+                words[0].isupper()
+            )
+
+        ):
+
+            words.pop(
+                0
+            )
+
         if words:
-            return " ".join(words)
+
+            return " ".join(
+                words
+            )
 
     except Exception as e:
 
         push_log({
-            "event": "name_extraction_error",
-            "error": str(e)
+
+            "event":
+            "name_extraction_error",
+
+            "error":
+            str(e)
+
         })
 
     return None
@@ -105,21 +125,27 @@ def extract_profile(text):
     profile = {}
 
     text = re.sub(
+
         r"\s+",
+
         " ",
+
         text
+
     ).strip()
 
     # ---------------- DOB ----------------
-    # label required (not optional) to avoid picking Issue Date
-    # handles D0B (zero), DB, DOB, Date ofBirth, no separator before date
 
     dob = re.search(
+
         r"(?:D[O0]B|DB|Date\s*of\s*Birth)"
         r"[:/\s]*"
         r"(\d{2}[/\-]\d{2}[/\-]\d{4})",
+
         text,
+
         re.I
+
     )
 
     if dob:
@@ -131,9 +157,13 @@ def extract_profile(text):
     # ---------------- GENDER ----------------
 
     gender = re.search(
+
         r"(male|female)",
+
         text,
+
         re.I
+
     )
 
     if gender:
@@ -153,11 +183,13 @@ def extract_profile(text):
             ] = "Male"
 
     # ---------------- AADHAAR ----------------
-    # \b\d{12}\b correctly skips VID (16 digits)
 
     aadhaar = re.search(
+
         r"\b\d{12}\b",
+
         text
+
     )
 
     if aadhaar:
@@ -167,14 +199,20 @@ def extract_profile(text):
         profile[
             "aadhaar"
         ] = (
+
             "XXXX XXXX "
+
             +
+
             num[-4:]
+
         )
 
     # ---------------- NAME ----------------
 
-    name = extract_name(text)
+    name = extract_name(
+        text
+    )
 
     if name:
 
@@ -188,7 +226,9 @@ def extract_profile(text):
 
         int(
             bool(
-                profile.get("name")
+                profile.get(
+                    "name"
+                )
             )
         )
 
@@ -196,7 +236,9 @@ def extract_profile(text):
 
         int(
             bool(
-                profile.get("dob")
+                profile.get(
+                    "dob"
+                )
             )
         )
 
@@ -204,7 +246,9 @@ def extract_profile(text):
 
         int(
             bool(
-                profile.get("aadhaar")
+                profile.get(
+                    "aadhaar"
+                )
             )
         )
 
@@ -216,28 +260,57 @@ def extract_profile(text):
         "profile_extraction",
 
         "verification":
+
         (
+
             "passed"
+
             if fields_found >= 2
+
             else
+
             "failed"
+
         ),
 
         "name_found":
-        bool(profile.get("name")),
+
+        bool(
+            profile.get(
+                "name"
+            )
+        ),
 
         "dob_found":
-        bool(profile.get("dob")),
+
+        bool(
+            profile.get(
+                "dob"
+            )
+        ),
 
         "gender_found":
-        bool(profile.get("gender")),
+
+        bool(
+            profile.get(
+                "gender"
+            )
+        ),
 
         "aadhaar_found":
-        bool(profile.get("aadhaar")),
+
+        bool(
+            profile.get(
+                "aadhaar"
+            )
+        ),
 
         "fields_found":
+
         fields_found
 
     })
 
     return profile
+
+
