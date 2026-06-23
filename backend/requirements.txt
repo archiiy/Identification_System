@@ -84,7 +84,6 @@ pyclipper==1.4.0
 pycparser==3.0
 pycryptodome==3.23.0
 pydantic==2.13.4
-pydantic_core==2.46.4
 Pygments==2.20.0
 pyparsing==3.3.2
 pypdfium2==5.8.0

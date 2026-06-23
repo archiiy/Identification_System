@@ -9,7 +9,7 @@ from datetime import (
 )
 
 
-ENABLE_ELASTIC = False
+ENABLE_ELASTIC = True
 
 
 es = None
